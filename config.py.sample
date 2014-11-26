@@ -1,0 +1,8 @@
+config = {
+ 'login_url': 'https://entgaming.net/forum/ucp.php',
+ 'username' : <Username>,
+ 'password' : <Password>
+}
+
+def getKey(key):
+  return config[key]
