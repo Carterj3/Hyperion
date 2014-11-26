@@ -1,8 +1,14 @@
 config = {
  'login_url': 'https://entgaming.net/forum/ucp.php',
+ 'games_url': 'https://entgaming.net/bans/games.php',
+ 'game_url': 'https://entgaming.net/bans/game.php',
+ 'verbose': 0,
  'username' : <Username>,
  'password' : <Password>
 }
 
 def getKey(key):
   return config[key]
+  
+def getUrl(key,params):
+  return config[key]+'?'+params
