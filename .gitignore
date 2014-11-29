@@ -3,6 +3,9 @@
 #Hide the actual config
 config.py
 
+#Hide the tmp folder
+tmp/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

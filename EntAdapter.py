@@ -1,9 +1,11 @@
 import config
 import re
+import math
 import urllib.request as urllib2
 import urllib
 from http.cookiejar import CookieJar
 from bs4 import BeautifulSoup
+
 
 def debug(message,level):
   if config.getKey('verbose') <= level:
@@ -87,3 +89,28 @@ if __name__ == '__main__':
   auth = EntAdapter(config.getKey('username'),config.getKey('password'))
   print(auth._postPage('https://entgaming.net/bans/',{}))
   print(str(auth.getGames('Island Defense','4726776')))
+  temp = auth._postPage('https://entgaming.net/bans/game.php?id=4740840',{})
+  soup = BeautifulSoup(temp)
+  index = 0
+  for ele in soup.findAll('td'):
+    print(index,ele)
+    index = index + 1
+  tds = soup.findAll('td')
+  users = []
+  for i in range(0,math.ceil((len(tds)-17)/5)): #players
+    users.append(
+    {
+      'userpage' : tds[16+5*i+0],
+      'ip' : tds[16+5*i+1],
+      'realm' : tds[16+5*i+2],
+      'left' : tds[16+5*i+3],
+      'left_reason' : tds[16+5*i+4]
+    })
+  game = {
+   'gamename' = tds[1],
+   'date' = tds[3],
+   'url' = tds[5],
+   'duration' = tds[7],
+   'botid' = tds[11],
+   'players' = users
+  }
