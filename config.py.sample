@@ -4,7 +4,9 @@ config = {
  'game_url': 'https://entgaming.net/bans/game.php',
  'verbose': 0,
  'username' : <Username>,
- 'password' : <Password>
+ 'password' : <Password>,
+ 'mongo-host' : 'localhost',
+ 'mongo-port' : 27017
 }
 
 def getKey(key):

@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-
+import config
 
 class MongoAdapter:
   def __init__(self,server,port):

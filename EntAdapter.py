@@ -24,6 +24,11 @@ class EntAdapter:
     self.password = password
     
   def _login(self):
+    '''
+    Performs a login by posting the username, password and collecting the cookie.
+    
+    returns nothing
+    '''
     params = urllib.parse.urlencode({
         'username' : self.username,
         'password' : self.password,
@@ -34,11 +39,21 @@ class EntAdapter:
     return
     
   def _checkLogin(self):
+    '''
+    Checks if there are no cookies left in the cookie jar and then attempts to login if that is the case.
+    
+    returns nothing
+    '''
     if len(self.cj) == 0: # allegedly the cookie jar will empty itself when cookies expire
       self._login()
     return
       
   def _postPage(self,page,params):
+    '''
+    Posts the given params to the url endpoint (page).
+    
+    returns the raw html of the page
+    '''
     self._checkLogin()
     
     url_encoded = urllib.parse.urlencode(params).encode(self.encoding)
@@ -47,12 +62,61 @@ class EntAdapter:
     
 
   def getGame(self,id):
+    '''
+    Gets the information for the given game on Ent.
+    
+    returns 
+    {
+      game_name     :       one_gom
+      game_id       :       1337
+      date          :       2014-12-1 18:56:00
+      duration      :       13.37
+      bot_id        :       7
+      players       :   [
+                            {
+                                name        :   test
+                                realm       :   west
+                                ip          :   133.713.371.337
+                                left        :   13
+                                left_reason :   Left the game voluntarily
+                            }
+                        ]
+    }
+    '''
     page = auth._postPage(config.getUrl('games_url','id='+str(id)),{})
     soup = BeautifulSoup(page)
+    index = 0
+    for ele in soup.findAll('td'):
+      print(index,ele)
+      index = index + 1
+    tds = soup.findAll('td')
+    users = []
+    for i in range(0,math.ceil((len(tds)-17)/5)): #players
+      users.append(
+      {
+        'userpage' : tds[16+5*i+0], #username
+        'realm' : tds[16+5*i+2],
+        'ip' : tds[16+5*i+1],
+        'left' : tds[16+5*i+3],
+        'left_reason' : tds[16+5*i+4]
+      })
+    game = {
+      'game_name' : tds[1],
+      'game_id' : id,
+      'date' : tds[3],
+      'url' : tds[5], # game id? ## Remove?
+      'duration' : tds[7],
+      'botid' : tds[11],
+      'players' : users
+      
+    return game
     
   def getGames(self,name,last_id):
     '''
-    returns a tuple containing the last_id and a list of game ids that meet the criteria
+    Gets a tuple containing the last_id (highest) and a list of game ids that meet the criteria
+    
+    returns
+    (1337, [1121,1337,1223,1332,1321])
     '''
     index=0
     games = []
