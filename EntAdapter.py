@@ -6,6 +6,16 @@ import urllib
 from http.cookiejar import CookieJar
 from bs4 import BeautifulSoup
 
+'''
+https://www.ovh.com/us/index.xml
+http://ip-api.com/198.100.144.199
+http://ipinfo.io/AS16276
+
+http://www.coloat.com/
+http://ip-api.com/199.116.116.33
+http://ipinfo.io/AS46562
+'''
+
 
 def debug(message,level):
   if config.getKey('verbose') <= level:
@@ -47,7 +57,17 @@ class EntAdapter:
     if len(self.cj) == 0: # allegedly the cookie jar will empty itself when cookies expire
       self._login()
     return
-      
+  
+  def _getPage(self,page):
+    '''
+    
+    returns the raw html of the page
+    '''
+    self._checkLogin()
+    
+    response = self.opener.open(page)
+    return response.read().decode("utf-8")
+  
   def _postPage(self,page,params):
     '''
     Posts the given params to the url endpoint (page).
@@ -58,9 +78,48 @@ class EntAdapter:
     
     url_encoded = urllib.parse.urlencode(params).encode(self.encoding)
     response = self.opener.open(page, url_encoded)
-    return response.read()
+    return response.read().decode("utf-8")
+  
+  def _csnfPost(self,page,params):
+    '''
+    Posts the given params to the url endpoint (page) 
+    after doing a get on the page to read the csnf values
     
-
+    returns the raw html of the page
+    '''
+    self._checkLogin()
+    
+    csnf_page = self._getPage(page)
+    
+    csnfname_regex = "name='CSRFName'.*\/>"
+    csnfname_token = "name='CSRFToken'.*\/>"
+    
+    csnfname = re.search(csnfname_regex,csnf_page).group(0)[23:-4]
+    csnftoken = re.search(csnfname_token,csnf_page).group(0)[24:-4]
+        
+    params['CSRFName'] = csnfname
+    params['CSRFToken'] = csnftoken
+    
+    url_encoded = urllib.parse.urlencode(params).encode(self.encoding)
+    response = self.opener.open(page, url_encoded)
+    return response.read()
+  
+  def rangeBan(self,ip,reason,botid,unban=False):
+    self._checkLogin()
+    
+    page = config.getKey('rangeban_url')
+    
+    params = {
+      'ip':ip,
+      'reason':reason,
+      'targetbot':botid
+    }
+    
+    if unban:
+      params['unban'] = 'unban'
+    
+    self._csnfPost(page,params)
+    
   def getGame(self,id):
     '''
     Gets the information for the given game on Ent.
@@ -83,32 +142,29 @@ class EntAdapter:
                         ]
     }
     '''
-    page = auth._postPage(config.getUrl('games_url','id='+str(id)),{})
+    page = self._postPage(config.getUrl('game_url','id='+str(id)),{})
+    print(config.getUrl('games_url','id='+str(id)))
+    print(page)
     soup = BeautifulSoup(page)
-    index = 0
-    for ele in soup.findAll('td'):
-      print(index,ele)
-      index = index + 1
     tds = soup.findAll('td')
     users = []
     for i in range(0,math.ceil((len(tds)-17)/5)): #players
       users.append(
       {
-        'userpage' : tds[16+5*i+0], #username
-        'realm' : tds[16+5*i+2],
-        'ip' : tds[16+5*i+1],
-        'left' : tds[16+5*i+3],
-        'left_reason' : tds[16+5*i+4]
+        'username' : re.search('">.+</a>',tds[16+5*i+0]).group(0)[2:-4], ## remove ">,</a> & url
+        'realm' : tds[16+5*i+2][4:-5],
+        'ip' : tds[16+5*i+1][4:-5],
+        'left' : tds[16+5*i+3][4:-5],
+        'left_reason' : tds[16+5*i+4][4:-5]
       })
     game = {
-      'game_name' : tds[1],
+      'game_name' : tds[1][4:-5], # remove <td>,</td>
       'game_id' : id,
-      'date' : tds[3],
-      'url' : tds[5], # game id? ## Remove?
-      'duration' : tds[7],
-      'botid' : tds[11],
+      'date' : tds[3][4:-5], # remove <td>,</td>
+      'duration' : tds[7][4:-5], # remove <td>,</td>
+      'botid' : tds[11][4:-5], # remove <td>,</td>
       'players' : users
-      
+      }
     return game
     
   def getGames(self,name,last_id):
@@ -153,15 +209,11 @@ class EntAdapter:
 # view-source:https://entgaming.net/bans/game.php?id=4740840?id=4740840
 
 if __name__ == '__main__':
-  auth = EntAdapter(config.getKey('username'),config.getKey('password'))
+  auth = EntAdapter(config.getKey('ent-user'),config.getKey('ent-pass'))
   print(auth._postPage('https://entgaming.net/bans/',{}))
   #print(str(auth.getGames('Island Defense','4726776')))
   temp = auth._postPage('https://entgaming.net/bans/game.php?id=4740840',{})
   soup = BeautifulSoup(temp)
-  index = 0
-  for ele in soup.findAll('td'):
-    print(index,ele)
-    index = index + 1
   tds = soup.findAll('td')
   users = []
   for i in range(0,math.ceil((len(tds)-17)/5)): #players
@@ -174,10 +226,10 @@ if __name__ == '__main__':
       'left_reason' : tds[16+5*i+4]
     })
   game = {
-   'gamename' : tds[1],
-   'date' : tds[3],
-   'url' : tds[5], # game id?
-   'duration' : tds[7],
+   'gamename' : tds[3],
+   'date' : tds[4],
+   'id' : tds[5], # game id?
+   'duration' : tds[6],
    'botid' : tds[11],
    'players' : users
   }

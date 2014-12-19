@@ -2,11 +2,12 @@ from pymongo import MongoClient
 import config
 
 class MongoAdapter:
-  def __init__(self,server,port):
+  def __init__(self,server,port,username,password):
     self.client = MongoClient(server, port)
+    self.client.admin.authenticate(username,password, mechanism='MONGODB-CR')
     self.db = client['hyperion']
     
-  def addFound(self):
+  def addFound(self,name,watch_id,game_id):
     '''
     Unique :: name@realm, watch_id, game_id
     {
@@ -15,9 +16,15 @@ class MongoAdapter:
         game_id     :   1337
     }
     '''
-    pass
+    found_db = self.db['found']
+    found = {
+        "name"       :   name,
+        "watch_id"   :   watch_id,
+        "game_id"    :   game_id
+    }
+    found_db.insert(found)
 
-  def addWatch(self):
+  def addWatch(self,submitter,ip,region,realm,start_date,duration):
     '''
     Unique :: submitter, ip, start date
     {
@@ -29,15 +36,24 @@ class MongoAdapter:
         duration        :   234445
     }
     '''
-    pass
+    watch_db = self.db['watch']
+    watch = {
+    "submitter"       :   submitter
+        "ip"          :   ip
+        "region"      :   region
+        "realm"       :   realm
+        "start_date"  :   start_date
+        "duration"    :   duration
+    }
+    watch_db.insert(watch)
 
-  def addUser(self):
+  def addUser(self,username,last_ip,last_region,first_played):
     '''
     Unique :: name@realm
     {
         name            :   test@west
-        last_ip         :   {1.2.3.4 , 2014-12-1 18:56:00}
-        last_region     :   {china , 2014-12-1 18:56:00}
+        last_ip         :   { ip:1.2.3.4 , date:2014-12-1 18:56:00}
+        last_region     :   {region:china , date2014-12-1 18:56:00}
         first_played    :   2014-12-1 18:56:00
     }
     '''
@@ -95,4 +111,4 @@ class MongoAdapter:
     for player in players:
       addPlayer(player,game_id)
 if __name__ == "__main__":
-mongo = MongoAdapter('localhost',27017)
+mongo = MongoAdapter(),'localhost',27017)

@@ -2,11 +2,14 @@ config = {
  'login_url': 'https://entgaming.net/forum/ucp.php',
  'games_url': 'https://entgaming.net/bans/games.php',
  'game_url': 'https://entgaming.net/bans/game.php',
+ 'rangeban_url': 'https://entgaming.net/bans/rangeban.php',
  'verbose': 0,
- 'username' : <Username>,
- 'password' : <Password>,
+ 'ent-user' : <Username>,
+ 'ent-pass' : <Password>,
  'mongo-host' : 'localhost',
- 'mongo-port' : 27017
+ 'mongo-port' : 27017,
+ 'mongo-user' : '<Username>',
+ 'mongo-pass' : '<Password>'
 }
 
 def getKey(key):
