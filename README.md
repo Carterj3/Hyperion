@@ -1,5 +1,13 @@
 Hyperion
 ========
+Set-up
+
+Rename config.py.sample to config.py
+Now modify the values to be correct, ex : 'ent-user' would be changed to be 'cambrioleuse' and 'ent-pass' would be be changed to 'ChangeMe'
+
+You can ignore the values related to mongo.
+
+========
 Mass-Range bans
 
 They can be preformed by going to the console and typing
