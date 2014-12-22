@@ -126,15 +126,15 @@ class EntAdapter:
     
     returns 
     {
-      game_name     :       one_gom
+      game_name     :       [ENT] Island Defense #38
       game_id       :       1337
-      date          :       2014-12-1 18:56:00
+      date          :       22 Dec 2014 15:46:37 EST
       duration      :       13.37
-      bot_id        :       7
+      botid        :       7
       players       :   [
                             {
-                                name        :   test
-                                realm       :   west
+                                username        :   test
+                                realm       :   europe.battle.net
                                 ip          :   133.713.371.337
                                 left        :   13
                                 left_reason :   Left the game voluntarily
@@ -143,28 +143,33 @@ class EntAdapter:
     }
     '''
     page = self._postPage(config.getUrl('game_url','id='+str(id)),{})
-    print(config.getUrl('games_url','id='+str(id)))
-    print(page)
     soup = BeautifulSoup(page)
     tds = soup.findAll('td')
     users = []
     for i in range(0,math.ceil((len(tds)-17)/5)): #players
+      tUsername = re.search('">.+</a>',str(tds[16+5*i+0])).group(0)
+      tIP = re.search('.*<br/>',str(tds[16+5*i+1])).group(0)
+      tRealm = str(tds[16+5*i+2])
+      tLeft = str(tds[16+5*i+3])
+      tLeft_reason = str(tds[16+5*i+4])
+      
       users.append(
       {
-        'username' : re.search('">.+</a>',tds[16+5*i+0]).group(0)[2:-4], ## remove ">,</a> & url
-        'realm' : tds[16+5*i+2][4:-5],
-        'ip' : tds[16+5*i+1][4:-5],
-        'left' : tds[16+5*i+3][4:-5],
-        'left_reason' : tds[16+5*i+4][4:-5]
+        'username' : tUsername[2:-4], ## remove ">,</a> & url
+        'realm' : tRealm[4:-5],
+        'ip' : tIP[4:-5],
+        'left' : float(tLeft[4:-5]),
+        'left_reason' : tLeft_reason[4:-5]
       })
     game = {
-      'game_name' : tds[1][4:-5], # remove <td>,</td>
+      'game_name' : str(tds[1])[4:-5], # remove <td>,</td>
       'game_id' : id,
-      'date' : tds[3][4:-5], # remove <td>,</td>
-      'duration' : tds[7][4:-5], # remove <td>,</td>
-      'botid' : tds[11][4:-5], # remove <td>,</td>
+      'date' : str(tds[3])[4:-5], # remove <td>,</td>
+      'duration' : float(str(tds[7])[4:-5]), # remove <td>,</td>
+      'botid' : int(str(tds[11])[4:-5]), # remove <td>,</td>
       'players' : users
       }
+    #print(game)
     return game
     
   def getGames(self,name,last_id):

@@ -3,6 +3,9 @@
 #Hide the actual config
 config.py
 
+#Hide the tests for now
+tests.py
+
 #Hide the tmp folder
 tmp/
 

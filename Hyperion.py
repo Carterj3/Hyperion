@@ -5,13 +5,12 @@ from EntAdapter import EntAdapter
 class Hyperion:
   def __init__(self,username,password):
     self.ent = EntAdapter(username,password)
-  
+
   def mass_rangeban(self,cdirs,reason,botid='',unban=False):
     for cdir in cdirs:
       for ip in self.generate_cdir(cdir):
-        print(ip,reason,botid,unban)
         self.ent.rangeBan(ip,reason,botid,unban)
-        
+
   def generate_cdir(self,cdir):
     splits = cdir.split('/')
     range = int(splits[1])
