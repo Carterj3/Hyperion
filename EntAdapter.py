@@ -104,7 +104,7 @@ class EntAdapter:
     response = self.opener.open(page, url_encoded)
     return response.read()
   
-  def rangeBan(self,ip,reason,botid,unban=False):
+  def rangeBan(self,ip,reason,botid='',unban=False):
     self._checkLogin()
     
     page = config.getKey('rangeban_url')

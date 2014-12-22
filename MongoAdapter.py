@@ -111,4 +111,4 @@ class MongoAdapter:
     for player in players:
       addPlayer(player,game_id)
 if __name__ == "__main__":
-mongo = MongoAdapter(),'localhost',27017)
+  mongo = MongoAdapter(),'localhost',27017)
