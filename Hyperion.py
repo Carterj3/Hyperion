@@ -9,7 +9,11 @@ class Hyperion:
   def mass_rangeban(self,cdirs,reason,botid='',unban=False):
     for cdir in cdirs:
       for ip in self.generate_cdir(cdir):
-        self.ent.rangeBan(ip,reason,botid,unban)
+        try:
+          self.ent.rangeBan(ip,reason,botid,unban)
+          print('banned:: '+str(ip))
+        except:
+          print('error:: '+str(ip))
 
   def generate_cdir(self,cdir):
     splits = cdir.split('/')
@@ -49,4 +53,4 @@ class Hyperion:
 if __name__ == "__main__":
    from Hyperion import Hyperion
    hyp = Hyperion(config.getKey('ent-user'),config.getKey('ent-pass'))
-   hyp.mass_rangeban(['ip/24'],'testing')
+   hyp.mass_rangeban(['69.46.90.0/24','136.0.0.0/20','185.33.20.0/22','185.33.20.0/24','205.164.35.0/24','205.164.36.0/24','205.164.43.0/24','205.164.62.0/24'],'vpn tid=28764  1.FM GmbH massban')

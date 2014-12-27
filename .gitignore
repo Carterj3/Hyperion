@@ -1,7 +1,8 @@
 #https://github.com/github/gitignore/blob/master/Python.gitignore
 
-#Hide the actual config
+#Hide the actual config & key
 config.py
+dev-nephthys.io.key
 
 #Hide the tests for now
 tests.py

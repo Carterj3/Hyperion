@@ -4,18 +4,7 @@ import math
 import urllib.request as urllib2
 import urllib
 from http.cookiejar import CookieJar
-from bs4 import BeautifulSoup
-
-'''
-https://www.ovh.com/us/index.xml
-http://ip-api.com/198.100.144.199
-http://ipinfo.io/AS16276
-
-http://www.coloat.com/
-http://ip-api.com/199.116.116.33
-http://ipinfo.io/AS46562
-'''
-
+from bs4 import BeautifulSoup # pip install beautifulsoup4
 
 def debug(message,level):
   if config.getKey('verbose') <= level:

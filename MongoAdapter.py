@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient #pip install pymongo
 import config
 
 class MongoAdapter:
@@ -38,11 +38,11 @@ class MongoAdapter:
     '''
     watch_db = self.db['watch']
     watch = {
-    "submitter"       :   submitter
-        "ip"          :   ip
-        "region"      :   region
-        "realm"       :   realm
-        "start_date"  :   start_date
+      "submitter"       :   submitter,
+        "ip"          :   ip,
+        "region"      :   region,
+        "realm"       :   realm,
+        "start_date"  :   start_date,
         "duration"    :   duration
     }
     watch_db.insert(watch)
@@ -69,7 +69,7 @@ class MongoAdapter:
 
     user_db.update(key,data,upsert=True)
 
-  def addPlayer(self,player,game_id)
+  def addPlayer(self,player,game_id):
     '''
     Unique :: name@realm, game_id
     {
@@ -110,5 +110,6 @@ class MongoAdapter:
     game_db.insert(game)
     for player in players:
       addPlayer(player,game_id)
+
 if __name__ == "__main__":
-  mongo = MongoAdapter(),'localhost',27017)
+  mongo = MongoAdapter(config.getKey('mongo-host'),config.getKey('mongo-port'),config.getKey('mongo-user'),config.getKey('mongo-pass'))
