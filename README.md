@@ -7,6 +7,11 @@ Now modify the values to be correct, ex : 'ent-user' would be changed to be 'cam
 
 You can ignore the values related to mongo.
 
+You need to install python3.
+
+Afterwards you need to add the following modules
+beautifulsoup4, which can be installed via "pip install beautifulsoup4"
+
 ========
 Mass-Range bans
 
