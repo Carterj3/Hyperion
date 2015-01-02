@@ -9,6 +9,10 @@ tests.py
 
 #Hide the tmp folder
 tmp/
+musical.py
+
+#Hide music
+*.mid
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

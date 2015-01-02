@@ -6,6 +6,23 @@ class Hyperion:
   def __init__(self,username,password):
     self.ent = EntAdapter(username,password)
 
+  def forum_rangeban(self,cdirs,reason='',botid='',unban=False):
+    for cdir in cdirs:
+      for ip in self.generate_cdir(cdir):
+        try:
+          print(str(ip))
+        except:
+          print('error:: '+str(ip))
+  
+  def whois_rangeban(self,whois_results,reason,botid='',unban=False):
+    import netaddr # pip install netaddr
+    import re
+    for cdirs in re.findall('([\d]+\.[\d]+\.[\d]+\.[\d]+\s*-\s*[\d]+\.[\d]+\.[\d]+\.[\d]+)',whois_results):
+      splits = cdirs.split('-')
+      for cdir in netaddr.iprange_to_cidrs(splits[0].strip() , splits[1].strip()):
+        self.mass_rangeban([str(cdir)],reason,botid,unban)
+          
+    
   def mass_rangeban(self,cdirs,reason,botid='',unban=False):
     for cdir in cdirs:
       for ip in self.generate_cdir(cdir):
@@ -53,4 +70,6 @@ class Hyperion:
 if __name__ == "__main__":
    from Hyperion import Hyperion
    hyp = Hyperion(config.getKey('ent-user'),config.getKey('ent-pass'))
-   hyp.mass_rangeban(['69.46.90.0/24','136.0.0.0/20','185.33.20.0/22','185.33.20.0/24','205.164.35.0/24','205.164.36.0/24','205.164.43.0/24','205.164.62.0/24'],'vpn tid=28764  1.FM GmbH massban')
+   f = open('E:\\Hyperion\\tmp\\rangeban.txt', 'r')
+   hyp.whois_rangeban(f.read(),'vpn tid=28764 lancom mass ban')   
+   f.close()
